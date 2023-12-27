@@ -49,27 +49,26 @@ def menu_func(self, context):
     self.layout.operator(ShowOnlyFrontFaces.bl_idname)
     self.layout.operator(ShowOnlyBackFaces.bl_idname)
 
-keymap = None
 addon_keymaps = []
 
 def register():
     bpy.utils.register_class(ShowOnlyFrontFaces)
     bpy.utils.register_class(ShowOnlyBackFaces)
     bpy.types.VIEW3D_MT_edit_mesh_showhide.append(menu_func)
-    window_manager = bpy.context.window_manager
-    if window_manager.keyconfigs.addon:
-        keymap = window_manager.keyconfigs.active.keymaps["Mesh"]
-        addon_keymaps.append(keymap.keymap_items.new(ShowOnlyFrontFaces.bl_idname, type="H", value="PRESS", ctrl=True, alt=False, shift=True))
-        addon_keymaps.append(keymap.keymap_items.new(ShowOnlyBackFaces.bl_idname, type="H", value="PRESS", ctrl=True, alt=True, shift=True))
+    keyconfigs = bpy.context.window_manager.keyconfigs
+    if keyconfigs.addon:
+        mesh_keymap = keyconfigs.active.keymaps["Mesh"]
+        addon_keymaps.append(mesh_keymap.keymap_items.new(ShowOnlyFrontFaces.bl_idname, type="H", value="PRESS", ctrl=True, alt=False, shift=True))
+        addon_keymaps.append(mesh_keymap.keymap_items.new(ShowOnlyBackFaces.bl_idname, type="H", value="PRESS", ctrl=True, alt=True, shift=True))
 
 def unregister():
     bpy.utils.unregister_class(ShowOnlyFrontFaces)
     bpy.utils.unregister_class(ShowOnlyBackFaces)
-    window_manager = bpy.context.window_manager
-    keyconfig = window_manager.keyconfigs.addon
-    if keyconfig:
+    keyconfigs = bpy.context.window_manager.keyconfigs
+    if keyconfigs.addon:
+        mesh_keymap = keyconfigs.active.keymaps["Mesh"]
         for keymap_item in addon_keymaps:
-            keymap.keymap_items.remove(keymap_item)
+            mesh_keymap.keymap_items.remove(keymap_item)
     addon_keymaps.clear()
 
 if __name__ == "__main__":
